@@ -119,7 +119,7 @@ erasure_codelib_LTLIBRARIES += libec_test_jerasure_generic.la
 unittest_erasure_code_plugin_SOURCES = \
 	erasure-code/ErasureCode.cc \
 	test/erasure-code/TestErasureCodePlugin.cc 
-unittest_erasure_code_plugin_CXXFLAGS = $(UNITTEST_CXXFLAGS)
+unittest_erasure_code_plugin_CXXFLAGS = $(UNITTEST_CXXFLAGS) -DEC_LIBS_PATH=$(srcdir)/.libs
 unittest_erasure_code_plugin_LDADD = $(LIBOSD) $(LIBCOMMON) $(UNITTEST_LDADD) $(CEPH_GLOBAL)
 if LINUX
 unittest_erasure_code_plugin_LDADD += -ldl
@@ -150,7 +150,8 @@ check_TESTPROGRAMS += unittest_erasure_code_jerasure
 
 unittest_erasure_code_plugin_jerasure_SOURCES = \
 	test/erasure-code/TestErasureCodePluginJerasure.cc
-unittest_erasure_code_plugin_jerasure_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
+unittest_erasure_code_plugin_jerasure_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS} \
+	-DEC_LIBS_PATH=$(srcdir)/.libs
 unittest_erasure_code_plugin_jerasure_LDADD = $(LIBOSD) $(LIBCOMMON) $(UNITTEST_LDADD) $(CEPH_GLOBAL)
 if LINUX
 unittest_erasure_code_plugin_jerasure_LDADD += -ldl
@@ -171,7 +172,8 @@ check_TESTPROGRAMS += unittest_erasure_code_isa
 unittest_erasure_code_plugin_isa_SOURCES = \
 	erasure-code/ErasureCode.cc \
 	test/erasure-code/TestErasureCodePluginIsa.cc
-unittest_erasure_code_plugin_isa_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
+unittest_erasure_code_plugin_isa_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS} \
+	-DEC_LIBS_PATH=$(srcdir)/.libs
 unittest_erasure_code_plugin_isa_LDADD = $(LIBOSD) $(LIBCOMMON) $(UNITTEST_LDADD) $(CEPH_GLOBAL) .libs/libec_isa.la $(LIBERASURE_CODE)
 if LINUX
 unittest_erasure_code_plugin_isa_LDADD += -ldl
@@ -182,7 +184,8 @@ endif
 unittest_erasure_code_lrc_SOURCES = \
 	test/erasure-code/TestErasureCodeLrc.cc \
 	${lrc_sources}
-unittest_erasure_code_lrc_CXXFLAGS = $(UNITTEST_CXXFLAGS)
+unittest_erasure_code_lrc_CXXFLAGS = $(UNITTEST_CXXFLAGS) \
+	-DEC_LIBS_PATH=$(srcdir)/.libs
 unittest_erasure_code_lrc_LDADD = $(LIBOSD) $(LIBCOMMON) $(UNITTEST_LDADD) $(CEPH_GLOBAL)
 if LINUX
 unittest_erasure_code_lrc_LDADD += -ldl
@@ -191,7 +194,8 @@ check_TESTPROGRAMS += unittest_erasure_code_lrc
 
 unittest_erasure_code_plugin_lrc_SOURCES = \
 	test/erasure-code/TestErasureCodePluginLrc.cc
-unittest_erasure_code_plugin_lrc_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
+unittest_erasure_code_plugin_lrc_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS} \
+	-DEC_LIBS_PATH=$(srcdir)/.libs
 unittest_erasure_code_plugin_lrc_LDADD = $(LIBOSD) $(LIBCOMMON) $(UNITTEST_LDADD) $(CEPH_GLOBAL)
 if LINUX
 unittest_erasure_code_plugin_lrc_LDADD += -ldl
@@ -276,7 +280,8 @@ check_TESTPROGRAMS += unittest_erasure_code_shec_arguments
 
 unittest_erasure_code_plugin_shec_SOURCES = \
         test/erasure-code/TestErasureCodePluginShec.cc
-unittest_erasure_code_plugin_shec_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS}
+unittest_erasure_code_plugin_shec_CXXFLAGS = ${AM_CXXFLAGS} ${UNITTEST_CXXFLAGS} \
+	-DEC_LIBS_PATH=$(srcdir)/.libs
 unittest_erasure_code_plugin_shec_LDADD = $(LIBOSD) $(LIBCOMMON) $(UNITTEST_LDADD) $(CEPH_GLOBAL)
 if LINUX
 unittest_erasure_code_plugin_shec_LDADD += -ldl

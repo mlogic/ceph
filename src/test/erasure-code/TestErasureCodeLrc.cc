@@ -15,6 +15,9 @@
  *
  */
 
+
+#define YSTR(X) STR(X)
+#define STR(X) #X
 #include <errno.h>
 
 #include "crush/CrushWrapper.h"
@@ -403,7 +406,7 @@ TEST(ErasureCodeLrc, layers_init)
 
     const char *description_string =
       "[ "
-      "  [ \"_cDDD_cDD_\", \"directory=.libs\" ],"
+      "  [ \"_cDDD_cDD_\", \"directory=YSTR(EC_LIBS_PATH)\" ],"
       "]";
     profile["layers"] = description_string;
     json_spirit::mArray description;
@@ -913,7 +916,7 @@ int main(int argc, char **argv)
   global_init(NULL, args, CEPH_ENTITY_TYPE_CLIENT, CODE_ENVIRONMENT_UTILITY, 0);
   common_init_finish(g_ceph_context);
 
-  g_conf->set_val("erasure_code_dir", ".libs", false, false);
+  g_conf->set_val("erasure_code_dir", YSTR(EC_LIBS_PATH), false, false);
 
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

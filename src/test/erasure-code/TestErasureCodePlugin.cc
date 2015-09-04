@@ -15,6 +15,8 @@
  * 
  */
 
+#define YSTR(X) STR(X)
+#define STR(X) #X
 #include <errno.h>
 #include <signal.h>
 #include "common/Thread.h"
@@ -74,7 +76,7 @@ TEST_F(ErasureCodePluginRegistryTest, factory_mutex) {
 TEST_F(ErasureCodePluginRegistryTest, all)
 {
   ErasureCodeProfile profile;
-  string directory(".libs");
+  string directory(YSTR(EC_LIBS_PATH));
   ErasureCodeInterfaceRef erasure_code;
   ErasureCodePluginRegistry &instance = ErasureCodePluginRegistry::instance();
   EXPECT_FALSE(erasure_code);
@@ -123,7 +125,7 @@ int main(int argc, char **argv) {
   global_init(NULL, args, CEPH_ENTITY_TYPE_CLIENT, CODE_ENVIRONMENT_UTILITY, 0);
   common_init_finish(g_ceph_context);
 
-  g_conf->set_val("erasure_code_dir", ".libs", false, false);
+  g_conf->set_val("erasure_code_dir", YSTR(EC_LIBS_PATH), false, false);
 
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
