@@ -6366,8 +6366,6 @@ void ReplicatedPG::complete_read_ctx(int result, OpContext *ctx)
     }
     ctx->bytes_read += p->outdata.length();
   }
-  ctx->reply->claim_op_out_data(ctx->ops);
-  ctx->reply->get_header().data_off = ctx->data_off;
 
   MOSDOpReply *reply = ctx->reply;
   ctx->reply = NULL;
@@ -6377,6 +6375,9 @@ void ReplicatedPG::complete_read_ctx(int result, OpContext *ctx)
       log_op_stats(ctx);
       publish_stats_to_osd();
     }
+
+    reply->claim_op_out_data(ctx->ops);
+    reply->get_header().data_off = ctx->data_off;
 
     // on read, return the current object version
     if (ctx->obs) {
