@@ -2187,6 +2187,12 @@ public:
 
   int init();
   int process();
+
+  void wakeup_sync_shards(set<int>& shard_ids) {
+    for (set<int>::iterator iter = shard_ids.begin(); iter != shard_ids.end(); ++iter) {
+      sync.wakeup(*iter);
+    }
+  }
 };
 
 int RGWSyncProcessorThread::init()
@@ -2204,6 +2210,14 @@ int RGWSyncProcessorThread::process()
 {
   sync.run();
   return 0;
+}
+
+void RGWRados::wakeup_sync_shards(set<int>& shard_ids)
+{
+  Mutex::Locker l(sync_thread_lock);
+  if (sync_processor_thread) {
+    sync_processor_thread->wakeup_sync_shards(shard_ids);
+  }
 }
 
 int RGWRados::get_required_alignment(rgw_bucket& bucket, uint64_t *alignment)
@@ -2254,6 +2268,7 @@ void RGWRados::finalize()
     finalize_watch();
   }
   if (run_sync_thread) {
+    Mutex::Locker l(sync_thread_lock);
     sync_processor_thread->stop();
     delete sync_processor_thread;
     sync_processor_thread = NULL;
@@ -2547,6 +2562,7 @@ int RGWRados::init_complete()
   }
 
   if (run_sync_thread) {
+    Mutex::Locker l(sync_thread_lock);
     sync_processor_thread = new RGWSyncProcessorThread(this);
     ret = sync_processor_thread->init();
     if (ret < 0) {
