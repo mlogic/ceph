@@ -2280,7 +2280,9 @@ void RGWRados::finalize()
     delete gc;
     gc = NULL;
   }
-  meta_notifier->stop();
+  if (meta_notifier) {
+    meta_notifier->stop();
+  }
   delete rest_master_conn;
 
   map<string, RGWRESTConn *>::iterator iter;
