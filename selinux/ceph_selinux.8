@@ -170,6 +170,8 @@ The SELinux process type ceph_t can manage files labeled with the following file
 
 	/var/log/ceph(/.*)?
 .br
+	/var/log/radosgw(/.*)?
+.br
 
 .br
 .B ceph_var_lib_t
@@ -319,7 +321,7 @@ Paths:
 .br
 .TP 5
 Paths:
-/var/log/ceph(/.*)?
+/var/log/ceph(/.*)?, /var/log/radosgw(/.*)?
 
 .EX
 .PP
