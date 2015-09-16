@@ -1252,6 +1252,9 @@ void MDSRank::active_start()
   mdcache->clean_open_file_lists();
   mdcache->export_remaining_imported_caps();
   finish_contexts(g_ceph_context, waiting_for_replay);  // kick waiters
+
+  mdcache->reissue_all_caps();
+
   finish_contexts(g_ceph_context, waiting_for_active);  // kick waiters
 }
 
@@ -1273,8 +1276,6 @@ void MDSRank::recovery_done(int oldstate)
   mdcache->start_recovered_truncates();
   mdcache->do_file_recover();
 
-  mdcache->reissue_all_caps();
-  
   // tell connected clients
   //bcast_mds_map();     // not anymore, they get this from the monitor
 
