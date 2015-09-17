@@ -6,8 +6,8 @@ else
     exit 1
 fi
 
-install python-pytest
-install pytest
+install python-pytest || true
+install pytest || true
 
 PATH=$(dirname $0)/..:$PATH
 

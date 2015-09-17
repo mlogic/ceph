@@ -80,17 +80,10 @@ class CephDisk:
             pass
         disk = self.unused_disks()[0]
         self.lvm_disk = disk
-        lvm_part_uuid = str(uuid.uuid1())
-        lvm_part_uuid_dev = '/dev/disk/by-partuuid/' + lvm_part_uuid
-        self.lvm_part_uuid_dev = lvm_part_uuid_dev
-        try:
-            self.sh("sgdisk -n0:0:0 -t0:8e00 -u0:" + lvm_part_uuid)
-            self.sh("udevadm settle")
-            self.sh("pvcreate " + lvm_part_uuid_dev)
-            self.sh("vgcreate vg " + lvm_part_uuid_dev)
-            self.sh("lvcreate -n lv -l 100%FREE vg " + lvm_part_uuid_dev)
-        except:
-            raise Exception("Unable to create LV.")
+        self.sh("sgdisk -Z " + disk)
+        self.sh("pvcreate " + disk)
+        self.sh("vgcreate vg " + disk)
+        self.sh("lvcreate -n lv -l 100%FREE vg " + disk)
         return "/dev/vg/lv"
 
     def remove_lv(self):
@@ -100,8 +93,7 @@ class CephDisk:
         try:
             self.sh("lvremove -f vg/lv")
             self.sh("vgremove -f vg")
-            self.sh("pvremove -f " + self.lvm_part_uuid_dev)
-            self.sh("sgdisk -Z " + self.lvm_disk)
+            self.sh("pvremove -f " + self.lvm_disk)
         except:
             raise Exception("Unable to remove LVM configuration.")
 
@@ -419,6 +411,9 @@ class TestCephDisk(object):
         '''
         Test ceph-disk osd creation with lvm logical volumes
         '''
+        if int(c.sh("udevadm --version")) < 211:
+            pytest.skip("partitioned lvm devices not supported in udev prior to 211")
+
         c = CephDisk()
         lv = c.ensure_lv()
         #
