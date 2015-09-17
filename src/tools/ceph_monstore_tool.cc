@@ -136,7 +136,8 @@ int inflate_pgmap(MonitorDBStore& st, unsigned ntrans, bool can_be_trimmed) {
   }
   
   version_t first = st.get("pgmap", "first_committed");
-  version_t ver = st.get("pgmap", "last_committed");
+  version_t ver = last;
+  MonitorDBStore::Transaction txn;
   for (unsigned i = 0; i < ntrans; i++) {
     bufferlist trans_bl;
     bufferlist dirty_pgs;
@@ -153,14 +154,18 @@ int inflate_pgmap(MonitorDBStore& st, unsigned ntrans, bool can_be_trimmed) {
     ::encode_destructively(dirty_pgs, trans_bl);
     bufferlist dirty_osds;
     ::encode(dirty_osds, trans_bl);
-    MonitorDBStore::Transaction txn;
     txn.put("pgmap", ++ver, trans_bl);
-    st.apply_transaction(txn);
-    std::cout << "adding pgmap#" << ver << std::endl;
+    std::cout << "adding pgmap#" << ver << "/" << last + ntrans << std::endl;
+    if (txn.size() > MAX(ntrans / 0xff, 0xff)) {
+      std::cout << "=== flushing ===" << std::endl;
+      st.apply_transaction(txn);
+      // reset the transaction
+      txn = MonitorDBStore::Transaction();
+    }
   }
-  MonitorDBStore::Transaction txn;
   txn.put("pgmap", "last_committed", ver);
   txn.put("pgmap_meta", "version", ver);
+  // this will also piggy back the leftover pgmap added in the loop above
   st.apply_transaction(txn);
   return 0;
 }
@@ -175,6 +180,7 @@ int main(int argc, char **argv) {
   unsigned tsize = 200;
   unsigned tvalsize = 1024;
   unsigned ntrans = 100;
+  bool can_be_trimmed = true;
   desc.add_options()
     ("help", "produce help message")
     ("mon-store-path", po::value<string>(&store_path),
@@ -197,6 +203,8 @@ int main(int argc, char **argv) {
      "val to write in each key")
     ("num-trans", po::value<unsigned>(&ntrans),
      "number of transactions to run")
+    ("can-be-trimmed", po::value<bool>(&can_be_trimmed),
+     "try to keep the added pgmap around, so they are not trimmed")
     ("command", po::value<string>(&cmd),
      "command")
     ;
@@ -469,7 +477,7 @@ int main(int argc, char **argv) {
     std::cout << "from '" << store_path << "' to '" << out_path << "'"
               << std::endl;
   } else if (cmd == "inflate-pgmap") {
-    inflate_pgmap(st, ntrans, true);
+    inflate_pgmap(st, ntrans, can_be_trimmed);
   } else {
     std::cerr << "Unrecognized command: " << cmd << std::endl;
     goto done;
