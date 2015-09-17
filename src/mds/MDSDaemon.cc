@@ -139,8 +139,12 @@ MDSDaemon::MDSDaemon(const std::string &n, Messenger *m, MonClient *mc) :
 MDSDaemon::~MDSDaemon() {
   Mutex::Locker lock(mds_lock);
 
-  if (mds_rank) {delete mds_rank ; mds_rank = NULL; }
-  if (objecter) {delete objecter ; objecter = NULL; }
+  delete mds_rank; 
+  mds_rank = NULL; 
+  delete objecter; 
+  objecter = NULL;
+  delete mdsmap;
+  mdsmap = NULL;
 
   delete authorize_handler_service_registry;
   delete authorize_handler_cluster_registry;
@@ -517,18 +521,10 @@ void MDSDaemon::tick()
   // reschedule
   reset_tick();
 
-  if (beacon.is_laggy()) {
-    dout(5) << "tick bailing out since we seem laggy" << dendl;
-    return;
-  }
-
   // Call through to subsystems' tick functions
   if (mds_rank) {
     mds_rank->tick();
   }
-
-  // Expose ourselves to Beacon to update health indicators
-  beacon.notify_health(mds_rank);
 }
 
 /* This function DOES put the passed message before returning*/

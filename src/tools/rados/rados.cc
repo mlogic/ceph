@@ -114,7 +114,7 @@ void usage(ostream& out)
 "   setomapheader <obj-name> <val>\n"
 "   tmap-to-omap <obj-name>          convert tmap keys/values to omap\n"
 "   watch <obj-name>                 add watcher on this object\n"
-"   notify <obj-name> <message>      notify wather of this object with message\n"
+"   notify <obj-name> <message>      notify watcher of this object with message\n"
 "   listwatchers <obj-name>          list the watchers of this object\n"
 "   set-alloc-hint <obj-name> <expected-object-size> <expected-write-size>\n"
 "                                    set allocation hint for an object\n"
@@ -1791,7 +1791,7 @@ static int rados_tool_common(const std::map < std::string, std::string > &opts,
     else
       ret = 0;
     string s(bl.c_str(), bl.length());
-    cout << s;
+    cout << s << std::endl;
   } else if (strcmp(nargs[0], "rmxattr") == 0) {
     if (!pool_name || nargs.size() < 3)
       usage_exit();
