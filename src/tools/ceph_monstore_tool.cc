@@ -156,7 +156,7 @@ int inflate_pgmap(MonitorDBStore& st, unsigned ntrans, bool can_be_trimmed) {
     ::encode(dirty_osds, trans_bl);
     txn.put("pgmap", ++ver, trans_bl);
     std::cout << "adding pgmap#" << ver << "/" << last + ntrans << std::endl;
-    if (txn.size() > MAX(ntrans / 0xff, 0xff)) {
+    if (txn.size() > MIN(ntrans / 0xff, 512)) {
       std::cout << "=== flushing ===" << std::endl;
       st.apply_transaction(txn);
       // reset the transaction
